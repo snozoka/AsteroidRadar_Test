@@ -1,9 +1,20 @@
 package com.udacity.asteroidradar.main
 
+
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.api.NasaApi
+import com.udacity.asteroidradar.api.NasaApiFilter
+import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 enum class NasaApiStatus { LOADING, ERROR, DONE }
 /**
@@ -17,17 +28,37 @@ class MainViewModel : ViewModel() {
     private val _asteroids = MutableLiveData<List<Asteroid>>()
     val asteroids: LiveData<List<Asteroid>> get() = _asteroids
 
+    //For testing network call
+    private val _response = MutableLiveData<String>()
+    val response: LiveData<String> get() = _response
+
     private val _navigateToSelectedAsteroid = MutableLiveData<Asteroid>()
     val navigateToSelectedAsteroid: LiveData<Asteroid> get() = _navigateToSelectedAsteroid
 
     /**
      * Call getNasaAsteroids() on init so we can display status immediately.
      */
-//    init {
-//        getNasaAsteroids(NasaApiFilter.SHOW_ALL)
-//    }
+    init {
+        getNasaAsteroids()
+    }
 
-//    private fun getNasaAsteroids(filter: NasaApiFilter) {
+
+    private fun getNasaAsteroids() {
+        NasaApi.retrofit_service.getNetworkAsteriods().enqueue(object: Callback<String>{
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                _response.value = response.body()
+                Log.i("AsteroidMessage", _response.value.toString())
+                _asteroids.value = parseAsteroidsJsonResult(JSONObject(_response.value))
+                Log.i("AsteroidMessage", _asteroids.value.toString())
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _asteroids.value = ArrayList()
+            }
+
+        })
+
+
 //        viewModelScope.launch {
 //            _status.value = NasaApiStatus.LOADING
 //            try {
@@ -39,7 +70,7 @@ class MainViewModel : ViewModel() {
 //                _asteroids.value = ArrayList()
 //            }
 //        }
-//    }
+    }
 
     /**
      * When the property is clicked, set the [_navigateToSelectedProperty] [MutableLiveData]
@@ -60,8 +91,8 @@ class MainViewModel : ViewModel() {
      * by calling [getMarsRealEstateProperties]
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
      */
-//    fun updateFilter(filter: NasaApiFilter){
-//        getNasaAsteroids(filter)
-//    }
+    fun updateFilter(){
+        getNasaAsteroids()
+    }
 
 }

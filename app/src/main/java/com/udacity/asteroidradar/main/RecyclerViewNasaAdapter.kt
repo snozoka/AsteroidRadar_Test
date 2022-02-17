@@ -13,8 +13,8 @@ class RecyclerViewNasaAdapter(val onClickListener:OnClickListener):
     ListAdapter<Asteroid, RecyclerViewNasaAdapter.AsteriodViewHolder>(DiffCallback) {
     class AsteriodViewHolder(private val binding: GridViewItemBinding):
         RecyclerView.ViewHolder(binding.root) {
-        fun  bind(asteriod: Asteroid){
-            binding.asteriod = asteriod
+        fun  bind(asteroid: Asteroid){
+            binding.asteroid = asteroid
             binding.executePendingBindings()
         }
 

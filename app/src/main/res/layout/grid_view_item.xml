@@ -4,16 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="asteriod"
+            name="asteroid"
             type="com.udacity.asteroidradar.Asteroid" />
+        <variable
+            name="response"
+            type="com.udacity.asteroidradar.main.MainViewModel" />
     </data>
-    <ImageView
-        android:id="@+id/mars_image"
-        android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        android:padding="2dp"/>
-    <!--        app:imageUrl="@{property.imgSrcUrl}"-->
-    <!--        tools:src="@tools:sample/backgrounds/scenic"/>-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                Text="@{asteroid.codename}"
+                android:textColor="@color/default_text_color" />
+
+            <TextView
+                android:id="@+id/absolute_magnitude"
+                Text="@{asteroid.closeApproachDate}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/default_text_color"
+                tools:text="2020-20-08" />
+
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </layout>
