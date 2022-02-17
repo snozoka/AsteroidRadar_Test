@@ -7,10 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.api.NasaApi
+import com.udacity.asteroidradar.api.NetworkAsteroidContainer
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.udacity.asteroidradar.database.as
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,7 +27,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
 
     suspend fun refreshAsteroid() {
         withContext(Dispatchers.IO) {
-            val asteroidlist: Array<Asteroid> = convertStringToAsteroidObjects()
+            val asteroidlist = convertStringToAsteroidObjects()
             database.asteroidDao.insertAll(*asteroidlist.asDatabaseModel())
         }
     }
@@ -47,3 +47,4 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         return  _asteroidsRepository
     }
 }
+
