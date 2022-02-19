@@ -1,27 +1,48 @@
 package com.udacity.asteroidradar.api
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.PictureOfDay
 import kotlinx.coroutines.Deferred
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-enum class NasaApiFilter(val value: String) { SHOW_DANGEROUS("true"), SHOW_NEUTRAL("false"), SHOW_ALL("all") }
+enum class PicOfDayApiFilter(val value: String) { MEDIA_TYPE("image") }
 
 /**
  * A public interface that exposes the [getNetworkAsteriods] method
  */
+
+/**
+ * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
+ * full Kotlin compatibility.
+ */
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+var picBaseURL = "https://api.nasa.gov/planetary/"
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
     .baseUrl(Constants.BASE_URL)
     .build()
+
+private val retrofit_pic = Retrofit.Builder()
+    .baseUrl(picBaseURL)
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+    .build()
+
 interface NasaApiService {
     /**
      * Returns a Coroutine [List] of [Asteriods] which can be fetched with await() if in a Coroutine scope.
@@ -31,6 +52,8 @@ interface NasaApiService {
     @GET("neo/rest/v1/feed?api_key=AZilfnHeeGQ8XeBqHcaey885EvZfP0c8oljaHnvC")
      fun getNetworkAsteriods():
             Call<String>
+    @GET("apod?api_key=AZilfnHeeGQ8XeBqHcaey885EvZfP0c8oljaHnvC")
+    suspend fun getPicOfDay(@Query("filter") type: String): PictureOfDay
 }
 
 
@@ -43,7 +66,8 @@ object NasaApi {
      * object.
      */
     val retrofit_service : NasaApiService by lazy { retrofit.create(NasaApiService::class.java) }
-}
+    val retrofitService_pic : NasaApiService by lazy { retrofit_pic.create(NasaApiService::class.java)}
+    }
 
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
