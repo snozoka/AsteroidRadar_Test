@@ -50,8 +50,7 @@ interface NasaApiService {
      * HTTP method
      */
     @GET("neo/rest/v1/feed?api_key=AZilfnHeeGQ8XeBqHcaey885EvZfP0c8oljaHnvC")
-     fun getNetworkAsteriods():
-            Call<String>
+     suspend fun getNetworkAsteriods(): String
     @GET("apod?api_key=AZilfnHeeGQ8XeBqHcaey885EvZfP0c8oljaHnvC")
     suspend fun getPicOfDay(@Query("filter") type: String): PictureOfDay
 }

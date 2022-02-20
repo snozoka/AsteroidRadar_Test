@@ -52,8 +52,8 @@ class MainViewModel(application: android.app.Application) : AndroidViewModel(app
         viewModelScope.launch {
             asteroidsRepository.convertStringToAsteroidObjects()
             getPicOfDay(PicOfDayApiFilter.MEDIA_TYPE)
-            //Log.i("AsteroidList",asteroids.toString())
             _asteroids = asteroidsRepository.asteroids as MutableLiveData<List<Asteroid>>
+            Log.i("AsteroidList:", _asteroids.value.toString())
         }
     }
 

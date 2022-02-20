@@ -3,14 +3,15 @@ package com.udacity.asteroidradar.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.Deferred
 
 @Dao
 interface AsteroidDao {
-    @Query("select * from databaseasteroid")
+    @Query("select * from databaseasteroid Limit 1")
     fun getAsteroids(): LiveData<List<DatabaseAsteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg asteroids: DatabaseAsteroid)
+    suspend fun insertAll(vararg asteroids: DatabaseAsteroid)
 }
 
 @Database(entities = [DatabaseAsteroid::class], version = 1)

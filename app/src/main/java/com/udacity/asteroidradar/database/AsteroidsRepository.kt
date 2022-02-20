@@ -28,19 +28,15 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
     }
 
 
+
     suspend fun convertStringToAsteroidObjects() {
-        withContext(Dispatchers.IO) {
-            NasaApi.retrofit_service.getNetworkAsteriods().enqueue(object: Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    asteroidlist = parseAsteroidsJsonResult(JSONObject(response.body()))
-                    database.asteroidDao.insertAll(*asteroidlist.asDatabaseModel())
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    asteroidlist = ArrayList()
-                }
-
-            })
+        try {
+            asteroidlist = parseAsteroidsJsonResult(JSONObject(NasaApi.retrofit_service.getNetworkAsteriods()))
+            Log.i("AsteroidListRepository:", asteroidlist.size.toString())
+            database.asteroidDao.insertAll(*asteroidlist.asDatabaseModel())
+            Log.i("AsteroidDBrepository:", asteroids.value?.size.toString())
+        } catch (ex: Exception) {
+            asteroidlist = ArrayList()
         }
     }
 }
